@@ -1,7 +1,7 @@
 # Task-Manager
 TaskManager is a web application for managing tasks and assignments. It allows users to create and assign tasks to other users, track the progress of each task, and receive notifications when tasks are completed.
 
-The application is built using a three-tier architecture, with separate layers for the presentation, business logic, and data access. The presentation layer is implemented as an ASP.NET Core API, which exposes a set of RESTful endpoints for interacting with the application. The business logic layer is implemented as a set of services that perform the core functionality of the application, such as creating and updating tasks. The data access layer is implemented using Entity Framework Core, which provides an object-relational mapping framework for interacting with a SQL Server database.
+The application is built using a three-tier architecture, with separate layers for the presentation, business logic, and data access. The presentation layer is implemented as an ASP.NET Core API, which exposes a set of RESTful endpoints for interacting with the application. The business logic layer is implemented as a set of services that perform the core functionality of the application, such as creating and updating tasks. The data access layer is implemented using Entity Framework Core, which provides an object-relational mapping framework for interacting with a Postgresql database.
 
 The application includes several key features, including:
 
