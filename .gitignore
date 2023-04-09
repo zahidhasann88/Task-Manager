@@ -1,0 +1,56 @@
+# Ignore build artifacts
+bin/
+obj/
+
+# Ignore NuGet packages
+*.nupkg
+packages/
+
+# Ignore user-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignore Visual Studio files
+/.vs
+.vscode/
+
+# Ignore ReSharper files
+*.resharper
+*.ReSharper*
+
+# Ignore test results
+TestResults/
+
+# Ignore configuration files
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+# Ignore logs
+*.log
+
+# Ignore database files
+*.mdf
+*.ldf
+
+# Ignore temp files
+*~*
+*.bak
+
+# Ignore MyTaskManager.Api.Tests
+MyTaskManager.Api.Tests/bin/
+MyTaskManager.Api.Tests/obj/
+
+# Ignore MyTaskManager.Infrastructure.Tests
+MyTaskManager.Infrastructure.Tests/bin/
+MyTaskManager.Infrastructure.Tests/obj/
+
+# Ignore macOS file system files
+.DS_Store
+
+# Ignore .NET Core build files
+# https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-clean?tabs=netcore21
+bin/
+obj/
