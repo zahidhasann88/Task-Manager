@@ -1,18 +1,15 @@
 # Task-Manager
-A web-based task management application.
-Here are some high-level features that the application could have:
+TaskManager is a web application for managing tasks and assignments. It allows users to create and assign tasks to other users, track the progress of each task, and receive notifications when tasks are completed.
 
-User authentication and authorization: Users can sign up, sign in, and sign out. They can also be assigned 
-different roles and permissions based on their access level.
+The application is built using a three-tier architecture, with separate layers for the presentation, business logic, and data access. The presentation layer is implemented as an ASP.NET Core API, which exposes a set of RESTful endpoints for interacting with the application. The business logic layer is implemented as a set of services that perform the core functionality of the application, such as creating and updating tasks. The data access layer is implemented using Entity Framework Core, which provides an object-relational mapping framework for interacting with a SQL Server database.
 
-Task creation and management: Users can create, assign, and manage tasks. Each task can have a due date, 
-priority level, description, and status.
+The application includes several key features, including:
 
-Task assignment and delegation: Users can assign tasks to other users and delegate tasks to other team 
-members.
+User authentication and authorization using JSON Web Tokens (JWT)
+CRUD (Create, Read, Update, Delete) operations for tasks and assignments
+Real-time notifications using SignalR
+Integration with an external email service for sending notifications
+Automated tests for the API and infrastructure layers using xUnit and Moq
+MyTaskManager is designed to be scalable and maintainable, with a clear separation of concerns between the different layers of the application. The codebase is well-organized and follows best practices for software development, including the SOLID principles and dependency injection.
 
-Task tracking and reporting: Users can track the progress of tasks and generate reports based on completed 
-tasks, pending tasks, and overdue tasks.
 
-Email notifications: Users can receive email notifications when a task is assigned to them, when a task is 
-overdue, or when a task's status is updated.
