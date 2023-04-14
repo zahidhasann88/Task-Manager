@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.DTOs;
@@ -30,29 +29,49 @@ namespace TaskManager.Controllers
             return Ok(taskAssignments);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TaskAssignment>> GetTaskAssignment(int id)
+        [HttpPost("get-by-id")]
+        public async Task<IActionResult> GetById([FromBody] TaskAssignmentIdDto taskAssignmentIdDto)
         {
-            var taskAssignment = await _taskAssignmentService.GetByIdAsync(id);
+            var taskAssignment = await _taskAssignmentService.GetByIdAsync(taskAssignmentIdDto.Id);
 
             if (taskAssignment == null)
             {
                 return NotFound();
             }
 
-            return taskAssignment;
+            return Ok(taskAssignment);
         }
 
-
-        //[HttpPost]
-        //public async Task<ActionResult<TaskAssignment>> Create(TaskAssignment taskAssignment)
-        //{
-        //    var createdTaskAssignment = await _taskAssignmentService.CreateAsync(taskAssignment);
-        //    return CreatedAtAction(nameof(GetById), new { id = createdTaskAssignment.Id }, createdTaskAssignment);
-        //}
-        [HttpPost]
+        [HttpPost("create-taskassignment")]
         public async Task<ActionResult<TaskAssignment>> CreateTaskAssignment(TaskAssignmentDto taskAssignmentDto)
         {
+            if (taskAssignmentDto == null)
+            {
+                return BadRequest("Task assignment cannot be null.");
+            }
+
+            if (taskAssignmentDto.TaskId == 0)
+            {
+                return BadRequest("Task Id cannot be zero.");
+            }
+
+            if (taskAssignmentDto.AssignedToUserId == null)
+            {
+                return BadRequest("Assigned user Id cannot be null.");
+            }
+
+            var task = await _taskAssignmentService.GetTaskByIdAsync(taskAssignmentDto.TaskId);
+            if (task == null)
+            {
+                return NotFound("Task not found.");
+            }
+
+            var assignedUser = await _taskAssignmentService.GetUserByIdAsync(taskAssignmentDto.AssignedToUserId);
+            if (assignedUser == null)
+            {
+                return NotFound("Assigned user not found.");
+            }
+
             var taskAssignment = new TaskAssignment
             {
                 TaskId = taskAssignmentDto.TaskId,
@@ -63,20 +82,22 @@ namespace TaskManager.Controllers
 
             var createdTaskAssignment = await _taskAssignmentService.CreateAsync(taskAssignment);
 
+            if (createdTaskAssignment == null)
+            {
+                return BadRequest("Could not create task assignment.");
+            }
+
             // Send email notification to the assigned user
-            var assignedUser = await _taskAssignmentService.GetUserByIdAsync(createdTaskAssignment.AssignedToUserId);
-            var task = await _taskAssignmentService.GetTaskByIdAsync(createdTaskAssignment.TaskId);
             var subject = $"You have been assigned a new task: {task.Title}";
             var body = $"Dear {assignedUser.Username},<br><br>You have been assigned a new task:<br><br>Name: {task.Title}<br>Description: {task.Description}<br>Due Date: {task.DueDate.ToString("d")}<br><br>Best regards,<br>Your Task Manager";
             EmailHelper.SendEmail(assignedUser.Email, subject, body);
 
-            return CreatedAtAction(nameof(GetTaskAssignment), new { id = createdTaskAssignment.Id }, createdTaskAssignment);
+            return CreatedAtAction("GetTaskAssignment", new { id = createdTaskAssignment.Id }, createdTaskAssignment);
         }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, TaskAssignmentUpdateDto taskAssignmentUpdateDto)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateAsync([FromBody] TaskAssignmentUpdateDto taskAssignmentUpdateDto)
         {
-            var taskAssignment = await _taskAssignmentService.GetByIdAsync(id);
+            var taskAssignment = await _taskAssignmentService.GetByIdAsync(taskAssignmentUpdateDto.Id);
             if (taskAssignment == null)
             {
                 return NotFound();
@@ -98,45 +119,50 @@ namespace TaskManager.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        [HttpDelete("delete-task-assignment")]
+        public async Task<IActionResult> Delete([FromBody] TaskAssignDeleteDto taskassigndeleteDto)
         {
-            var taskAssignment = await _taskAssignmentService.GetByIdAsync(id);
-            if (taskAssignment == null)
+            try
             {
-                return NotFound();
+                var taskAssignment = await _taskAssignmentService.GetByIdAsync(taskassigndeleteDto.Id);
+                if (taskAssignment == null)
+                {
+                    return NotFound();
+                }
+                await _taskAssignmentService.DeleteAsync(taskAssignment);
+                return NoContent();
             }
-
-            await _taskAssignmentService.DeleteAsync(id);
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpGet("byUser/{userId}")]
-        public async Task<ActionResult<IEnumerable<TaskAssignment>>> GetAssignmentsByUserId(int userId)
+        [HttpPost("by-user/user-id")]
+        public async Task<ActionResult<IEnumerable<TaskAssignment>>> GetAssignmentsByUserId([FromBody] TaskAssignUserIdDto taskAssignUserIdDto)
         {
-            var taskAssignments = await _taskAssignmentService.GetAssignmentsByUserIdAsync(userId);
+            var taskAssignments = await _taskAssignmentService.GetAssignmentsByUserIdAsync(taskAssignUserIdDto.userId);
             return Ok(taskAssignments);
         }
 
-        [HttpGet("byTask/{taskId}")]
-        public async Task<ActionResult<IEnumerable<TaskAssignment>>> GetAssignmentsByTaskId(int taskId)
+        [HttpPost("by-ask/task-id")]
+        public async Task<ActionResult<IEnumerable<TaskAssignment>>> GetAssignmentsByTaskId([FromBody] TaskAssignTaskIdDto taskAssignTaskIdDto)
         {
-            var taskAssignments = await _taskAssignmentService.GetAssignmentsByTaskIdAsync(taskId);
+            var taskAssignments = await _taskAssignmentService.GetAssignmentsByTaskIdAsync(taskAssignTaskIdDto.taskId);
             return Ok(taskAssignments);
         }
 
-        [HttpGet("pendingByUser/{userId}")]
-        public async Task<ActionResult<IEnumerable<TaskAssignment>>> GetPendingAssignmentsByUserId(int userId)
+        [HttpPost("pending-by-user/user-id")]
+        public async Task<ActionResult<IEnumerable<TaskAssignment>>> GetPendingAssignmentsByUserId([FromBody] TaskAssiPendingUserIdDto taskAssiPendingUserIdDto)
         {
-            var taskAssignments = await _taskAssignmentService.GetPendingAssignmentsByUserIdAsync(userId);
+            var taskAssignments = await _taskAssignmentService.GetPendingAssignmentsByUserIdAsync(taskAssiPendingUserIdDto.userId);
             return Ok(taskAssignments);
         }
 
-        [HttpGet("overdueByUser/{userId}")]
-        public async Task<ActionResult<IEnumerable<TaskAssignment>>> GetOverdueAssignmentsByUserId(int userId)
+        [HttpPost("overdue-by-user/user-id")]
+        public async Task<ActionResult<IEnumerable<TaskAssignment>>> GetOverdueAssignmentsByUserId([FromBody] TaskAssiOverdueUserIdDto taskAssiOverdueUserIdDto)
         {
-            var taskAssignments = await _taskAssignmentService.GetOverdueAssignmentsByUserIdAsync(userId);
+            var taskAssignments = await _taskAssignmentService.GetOverdueAssignmentsByUserIdAsync(taskAssiOverdueUserIdDto.userId);
             return Ok(taskAssignments);
         }
     }

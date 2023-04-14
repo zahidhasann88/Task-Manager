@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastructure.DbContexts;
@@ -26,7 +21,7 @@ namespace TaskManager.Infrastructure.Repositories
 
         public async Task<TaskItem> GetByIdAsync(int id)
         {
-            return await _dbContext.Tasks.FindAsync(id);
+            return await _dbContext.Tasks.FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task CreateAsync(TaskItem taskItem)
@@ -37,8 +32,28 @@ namespace TaskManager.Infrastructure.Repositories
 
         public async Task UpdateAsync(TaskItem taskItem)
         {
-            _dbContext.Entry(taskItem).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                var existingTask = await _dbContext.Tasks.FindAsync(taskItem.Id);
+
+                if (existingTask == null)
+                {
+                    throw new ArgumentException("Task not found");
+                }
+
+                existingTask.Title = taskItem.Title;
+                existingTask.Description = taskItem.Description;
+                existingTask.DueDate = taskItem.DueDate;
+                existingTask.Priority = taskItem.Priority;
+                existingTask.Status = taskItem.Status;
+
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or inspect its details for debugging purposes
+                throw new ArgumentException("Error updating task: " + ex.Message);
+            }
         }
 
         public async Task DeleteAsync(TaskItem taskItem)
@@ -46,5 +61,6 @@ namespace TaskManager.Infrastructure.Repositories
             _dbContext.Tasks.Remove(taskItem);
             await _dbContext.SaveChangesAsync();
         }
+
     }
 }

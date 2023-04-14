@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.DTOs;
@@ -14,13 +11,15 @@ namespace TaskManager.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IJwtService _jwtService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, IJwtService jwtService)
         {
             _userService = userService;
+            _jwtService = jwtService;
         }
 
-        [HttpPost("authenticate")]
+        [HttpPost("login")]
         public async Task<IActionResult> Authenticate([FromBody] UserAuthenticateDto userDto)
         {
             var user = await _userService.AuthenticateAsync(userDto.Username, userDto.Password);
@@ -28,21 +27,22 @@ namespace TaskManager.Controllers
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
 
-            return Ok(user);
+            string token = await _jwtService.GenerateTokenAsync(user);
+            return Ok(new { Token = token });
         }
 
         //[Authorize(Roles = "Admin")]
-        [HttpGet]
+
+        [HttpGet("get-users")]
         public async Task<IEnumerable<User>> GetAll()
         {
             return await _userService.GetAllAsync();
         }
 
-        //[Authorize]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpPost("get-by-id")]
+        public async Task<IActionResult> GetById([FromBody] GetByIdDto getByIdDto)
         {
-            var user = await _userService.GetByIdAsync(id);
+            var user = await _userService.GetByIdAsync(getByIdDto.Id);
 
             if (user == null)
                 return NotFound();
@@ -50,7 +50,8 @@ namespace TaskManager.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
+
+        [HttpPost("create-user")]
         public async Task<IActionResult> Create([FromBody] UserCreateDto userDto)
         {
             // map dto to entity
@@ -75,13 +76,13 @@ namespace TaskManager.Controllers
         }
 
         //[Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UserUpdateDto userDto)
+        [HttpPut("update-user")]
+        public async Task<IActionResult> Update([FromBody] UserUpdateDto userDto)
         {
             // map dto to entity and set id
             var user = new User
             {
-                Id = id,
+                Id = userDto.Id,
                 Username = userDto.Username,
                 Email = userDto.Email,
                 Role = userDto.Role
@@ -101,11 +102,12 @@ namespace TaskManager.Controllers
         }
 
         //[Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("delete-user")]
+        public async Task<IActionResult> Delete([FromBody] DeleteDto deleteDto)
         {
-            await _userService.DeleteAsync(id);
+            await _userService.DeleteAsync(deleteDto.Id);
             return Ok();
         }
+
     }
 }

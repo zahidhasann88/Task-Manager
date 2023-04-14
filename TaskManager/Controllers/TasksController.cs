@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
+using TaskManager.DTOs;
 
 namespace TaskManager.Controllers
 {
@@ -16,7 +17,7 @@ namespace TaskManager.Controllers
             _taskService = taskService;
         }
 
-        [HttpGet]
+        [HttpGet("get-tasks")]
         public async Task<ActionResult<IEnumerable<TaskItem>>> GetAll()
         {
             try
@@ -30,25 +31,20 @@ namespace TaskManager.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TaskItem>> GetById(int id)
+        [HttpPost("get-by-id")]
+        public async Task<IActionResult> GetById([FromBody] GetByIdDto getByIdDto)
         {
-            try
+            var task = await _taskService.GetByIdAsync(getByIdDto.Id);
+
+            if (task == null)
             {
-                var task = await _taskService.GetByIdAsync(id);
-                if (task == null)
-                {
-                    return NotFound();
-                }
-                return Ok(task);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            return Ok(task);
         }
 
-        [HttpPost]
+        [HttpPost("create-task")]
         public async Task<ActionResult<TaskItem>> CreateTask(TaskItem taskItem)
         {
             try
@@ -62,17 +58,26 @@ namespace TaskManager.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<TaskItem>> Update(int id, TaskItem taskItem)
+        [HttpPut("update-task")]
+        public async Task<IActionResult> Update([FromBody] UpdateTaskDTO updateTaskDto)
         {
-            if (id != taskItem.Id)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
+
+            var taskItem = new TaskItem
+            {
+                Id = updateTaskDto.Id,
+                Title = updateTaskDto.Title,
+                Description = updateTaskDto.Description,
+                DueDate = updateTaskDto.DueDate
+            };
+
             try
             {
                 await _taskService.UpdateAsync(taskItem);
-                return NoContent();
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -80,23 +85,25 @@ namespace TaskManager.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        [HttpDelete("delete-task")]
+        public async Task<IActionResult> Delete([FromBody] DeleteTaskDTO deleteDto)
         {
             try
             {
-                var task = await _taskService.GetByIdAsync(id);
+                var task = await _taskService.GetByIdAsync(deleteDto.Id);
                 if (task == null)
                 {
                     return NotFound();
                 }
                 await _taskService.DeleteAsync(task);
-                return NoContent();
+                return Ok();
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
+
     }
 }

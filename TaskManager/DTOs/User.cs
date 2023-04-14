@@ -41,4 +41,16 @@ namespace TaskManager.DTOs
 
         public bool IsDeleted { get; set; }
     }
+
+    public class DeleteDto
+    {
+        public int Id { get; set; }
+    }
+
+    public class GetByIdDto
+    {
+        public int Id { get; set; }
+    }
+
+
 }

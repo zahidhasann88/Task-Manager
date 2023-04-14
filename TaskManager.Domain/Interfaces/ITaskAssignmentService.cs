@@ -13,7 +13,7 @@ namespace TaskManager.Domain.Interfaces
         Task<TaskAssignment> GetByIdAsync(int id);
         Task<TaskAssignment> CreateAsync(TaskAssignment taskAssignment);
         Task UpdateAsync(TaskAssignment taskAssignment);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(TaskAssignment taskAssignment);
         Task<IEnumerable<TaskAssignment>> GetAssignmentsByUserIdAsync(int userId);
         Task<IEnumerable<TaskAssignment>> GetAssignmentsByTaskIdAsync(int taskId);
         Task<IEnumerable<TaskAssignment>> GetPendingAssignmentsByUserIdAsync(int userId);

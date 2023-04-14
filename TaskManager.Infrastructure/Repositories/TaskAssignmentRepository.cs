@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastructure.DbContexts;
@@ -63,7 +58,6 @@ namespace TaskManager.Infrastructure.Repositories
 
             return taskAssignment;
         }
-
         public async Task UpdateAsync(TaskAssignment taskAssignment)
         {
             var existingTaskAssignment = await GetByIdAsync(taskAssignment.Id);
@@ -93,19 +87,15 @@ namespace TaskManager.Infrastructure.Repositories
                 existingTaskAssignment.IsDelegated = taskAssignment.IsDelegated;
             }
 
+            existingTaskAssignment.AssignedDate = taskAssignment.AssignedDate.ToUniversalTime();
             _dbContext.Entry(existingTaskAssignment).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }
 
-
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(TaskAssignment taskAssi)
         {
-            var taskAssignment = await _dbContext.TaskAssignments.FindAsync(id);
-            if (taskAssignment != null)
-            {
-                _dbContext.TaskAssignments.Remove(taskAssignment);
+                _dbContext.TaskAssignments.Remove(taskAssi);
                 await _dbContext.SaveChangesAsync();
-            }
         }
 
         public async Task<IEnumerable<TaskAssignment>> GetAssignmentsByUserIdAsync(int userId)

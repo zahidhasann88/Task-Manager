@@ -18,4 +18,31 @@
         public bool IsDelegated { get; set; }
     }
 
+    public class TaskAssignmentIdDto
+    {
+        public int Id { get; set; }
+    }
+    public class TaskAssignDeleteDto
+    {
+        public int Id { get; set; }
+    }
+    public class TaskAssignUserIdDto
+    {
+        public int userId { get; set; }
+    }
+
+    public class TaskAssignTaskIdDto
+    {
+        public int taskId { get; set; }
+    }
+    public class TaskAssiPendingUserIdDto
+    {
+        public int userId { get; set; }
+    }
+    public class TaskAssiOverdueUserIdDto
+    {
+        public int userId { get; set; }
+    }
+
+
 }
