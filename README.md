@@ -1,15 +1,43 @@
-# Task-Manager
-TaskManager is a web application for managing tasks and assignments. It allows users to create and assign tasks to other users, track the progress of each task, and receive notifications when tasks are completed.
+# Task Manager API
 
-The application is built using a three-tier architecture, with separate layers for the presentation, business logic, and data access. The presentation layer is implemented as an ASP.NET Core API, which exposes a set of RESTful endpoints for interacting with the application. The business logic layer is implemented as a set of services that perform the core functionality of the application, such as creating and updating tasks. The data access layer is implemented using Entity Framework Core, which provides an object-relational mapping framework for interacting with a Postgresql database.
+Task Manager API is a web application designed for efficient task and assignment management. Users can create, assign, track tasks, and receive notifications upon task completion.
 
-The application includes several key features, including:
+## Overview
 
-User authentication and authorization using JSON Web Tokens (JWT)
-CRUD (Create, Read, Update, Delete) operations for tasks and assignments
-Real-time notifications using SignalR
-Integration with an external email service for sending notifications
-Automated tests for the API and infrastructure layers using xUnit and Moq
-MyTaskManager is designed to be scalable and maintainable, with a clear separation of concerns between the different layers of the application. The codebase is well-organized and follows best practices for software development, including the SOLID principles and dependency injection.
+TaskManager is a scalable web application that utilizes a three-tier architecture, ensuring a clear separation of presentation, business logic, and data access layers. The presentation layer, implemented as an ASP.NET Core API, exposes RESTful endpoints for interacting with the application. The business logic layer consists of services responsible for core functionalities like task management. The data access layer is facilitated by Entity Framework Core, offering an object-relational mapping framework for PostgreSQL interactions.
+
+### Key Features
+
+- **User Authentication and Authorization**: Utilizes JSON Web Tokens (JWT) for secure access.
+- **CRUD Operations for Tasks and Assignments**: Enables Create, Read, Update, and Delete operations.
+- **Integration with External Email Service**: Sends notifications through an external email service.
+
+## Challenges Faced
+
+During the development of Task Manager API, several challenges were encountered, including:
+
+- **Secure Implementation of SMTP for Email Notifications**: Ensuring secure and reliable implementation of SMTP for email notifications posed initial hurdles.
+- **Consistent Enforcement of Clean Architecture Principles**: Maintaining consistency in adhering to Clean Architecture principles throughout the development process required continuous attention and effort.
+
+## Architecture
+
+TaskManager ensures scalability and maintainability with a robust separation of concerns across its layers. The codebase follows industry best practices, incorporating SOLID principles and dependency injection.
+
+## Getting Started
+
+To begin using the Task Manager API:
+
+1. **Clone the Repository**: Clone the repository from [Task Manager](https://github.com/zahidhasann88/Task-Manager).
+2. **Installation**: Install dependencies as specified in the project documentation.
+3. **Configuration**: Set up environment variables and configurations.
+4. **Usage**: Run the API and explore the functionalities.
+
+## Technologies Used
+
+- **ASP.NET Core**: Presentation layer framework.(Framework for building cross-platform applications.)
+- **Entity Framework Core (EF Core)**: Data access layer for PostgreSQL interaction.(Object-Relational Mapping (ORM) framework for .NET.)
+- **Web API**: Framework for building HTTP services.
+- **PostgreSQL**: Powerful open-source relational database system.
+
 
 
